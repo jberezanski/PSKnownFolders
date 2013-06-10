@@ -45,6 +45,21 @@
   <ItemGroup>
     <Compile Include="GetKnownFolderCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Win32\FFFP_MODE.cs" />
+    <Compile Include="Win32\FOLDERTYPEID.cs" />
+    <Compile Include="Win32\IKnownFolder.cs" />
+    <Compile Include="Win32\IKnownFolderManager.cs" />
+    <Compile Include="Win32\IShellItem.cs" />
+    <Compile Include="Win32\KF_CATEGORY.cs" />
+    <Compile Include="Win32\KF_DEFINITION_FLAGS.cs" />
+    <Compile Include="Win32\KF_REDIRECTION_CAPABILITIES.cs" />
+    <Compile Include="Win32\KF_REDIRECT_FLAGS.cs" />
+    <Compile Include="Win32\KNOWNFOLDERID.cs" />
+    <Compile Include="Win32\KnownFolderManager.cs" />
+    <Compile Include="Win32\KNOWNFOLDER_DEFINITION.cs" />
+    <Compile Include="Win32\KNOWN_FOLDER_FLAG.cs" />
+    <Compile Include="Win32\SICHINTF.cs" />
+    <Compile Include="Win32\SIGDN.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
