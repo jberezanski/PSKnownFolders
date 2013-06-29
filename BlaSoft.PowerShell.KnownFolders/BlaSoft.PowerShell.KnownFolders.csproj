@@ -55,6 +55,7 @@
     <Compile Include="Win32\KF_REDIRECTION_CAPABILITIES.cs" />
     <Compile Include="Win32\KF_REDIRECT_FLAGS.cs" />
     <Compile Include="Win32\KNOWNFOLDERID.cs" />
+    <Compile Include="Win32\KnownFolderIds.cs" />
     <Compile Include="Win32\KnownFolderManager.cs" />
     <Compile Include="Win32\KNOWNFOLDER_DEFINITION.cs" />
     <Compile Include="Win32\KNOWN_FOLDER_FLAG.cs" />

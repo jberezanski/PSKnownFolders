@@ -8,7 +8,7 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
     public class KnownFolderManagerInterop
     {
         [TestMethod]
-        public void CanCreateKnownFolderManager()
+        public void Can_create_KnownFolderManager()
         {
             KnownFolderManager obj = new KnownFolderManager();
             Assert.IsNotNull(obj);
@@ -20,6 +20,16 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
             KnownFolderManager obj = new KnownFolderManager();
             IKnownFolderManager knownFolderManager = (IKnownFolderManager)obj;
             Assert.IsNotNull(knownFolderManager);
+        }
+
+        [TestMethod]
+        public void Can_obtain_documents_folder()
+        {
+            var knownFolderManager = (IKnownFolderManager)new KnownFolderManager();
+            IKnownFolder knownFolder;
+            var id = KnownFolderIds.FOLDERID_Documents;
+            knownFolderManager.GetFolder(ref id, out knownFolder);
+            Assert.IsNotNull(knownFolder);
         }
     }
 }
