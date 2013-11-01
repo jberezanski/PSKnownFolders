@@ -55,6 +55,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BasicPowerShell.cs" />
+    <Compile Include="GetKnownFolderCommandTests.cs" />
     <Compile Include="KnownFolderInterop.cs" />
     <Compile Include="KnownFolderManagerInterop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
