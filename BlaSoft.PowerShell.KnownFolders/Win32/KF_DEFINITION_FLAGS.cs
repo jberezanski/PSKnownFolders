@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace BlaSoft.PowerShell.KnownFolders.Win32
 {
     [Flags]
-    enum KF_DEFINITION_FLAGS : uint
+    internal enum KF_DEFINITION_FLAGS : uint
     {
         KFDF_NONE = 0,
         KFDF_PERSONALIZE = 0x00000001,

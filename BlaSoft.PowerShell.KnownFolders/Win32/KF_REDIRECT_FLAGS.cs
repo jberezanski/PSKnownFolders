@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace BlaSoft.PowerShell.KnownFolders.Win32
+﻿namespace BlaSoft.PowerShell.KnownFolders.Win32
 {
-    enum KF_REDIRECT_FLAGS
+    internal enum KF_REDIRECT_FLAGS
     {
         KF_REDIRECT_NONE = 0,
         KF_REDIRECT_USER_EXCLUSIVE = 0x00000001,

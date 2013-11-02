@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace BlaSoft.PowerShell.KnownFolders.Win32
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 4)]
-    struct KNOWNFOLDER_DEFINITION
+    internal struct KNOWNFOLDER_DEFINITION
     {
         public KF_CATEGORY category;
 

@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace BlaSoft.PowerShell.KnownFolders.Win32
 {
     [Flags]
-    enum KF_REDIRECTION_CAPABILITIES : uint
+    internal enum KF_REDIRECTION_CAPABILITIES : uint
     {
         KF_REDIRECTION_CAPABILITIES_NONE = 0,
         KF_REDIRECTION_CAPABILITIES_ALLOW_ALL = 0x000000FF,

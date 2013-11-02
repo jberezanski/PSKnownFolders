@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace BlaSoft.PowerShell.KnownFolders.Win32
+﻿namespace BlaSoft.PowerShell.KnownFolders.Win32
 {
-    public enum SIGDN : uint
+    internal enum SIGDN : uint
     {
         NORMALDISPLAY = 0,
         PARENTRELATIVEPARSING = 0x80018001,

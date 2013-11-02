@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace BlaSoft.PowerShell.KnownFolders.Win32
+﻿namespace BlaSoft.PowerShell.KnownFolders.Win32
 {
-    enum KF_CATEGORY
+    internal enum KF_CATEGORY
     {
         KF_CATEGORY_INVALID = 0,
         KF_CATEGORY_VIRTUAL = 0x00000001,

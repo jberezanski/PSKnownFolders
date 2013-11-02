@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace BlaSoft.PowerShell.KnownFolders.Win32
 {
     [StructLayout(LayoutKind.Sequential)]
-    struct KNOWNFOLDERID
+    internal struct KNOWNFOLDERID
     {
         public Guid value;
 

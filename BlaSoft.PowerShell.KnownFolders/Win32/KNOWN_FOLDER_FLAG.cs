@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace BlaSoft.PowerShell.KnownFolders.Win32
 {
     [Flags]
-    enum KNOWN_FOLDER_FLAG : uint
+    internal enum KNOWN_FOLDER_FLAG : uint
     {
         KF_FLAG_NONE = 0,
         KF_FLAG_SIMPLE_IDLIST = 0x00000100,

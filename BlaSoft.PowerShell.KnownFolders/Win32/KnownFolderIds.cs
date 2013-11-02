@@ -1,6 +1,6 @@
 ﻿namespace BlaSoft.PowerShell.KnownFolders.Win32
 {
-    static class KnownFolderIds
+    internal static class KnownFolderIds
     {
         // legacy CSIDL value: CSIDL_NETWORK
         // display name: "Network"

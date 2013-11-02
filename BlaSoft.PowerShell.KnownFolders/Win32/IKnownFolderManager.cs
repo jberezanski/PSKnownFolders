@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace BlaSoft.PowerShell.KnownFolders.Win32
@@ -9,7 +6,7 @@ namespace BlaSoft.PowerShell.KnownFolders.Win32
     [ComImport]
     [Guid("8BE2D872-86AA-4d47-B776-32CCA40C7018")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    interface IKnownFolderManager
+    internal interface IKnownFolderManager
     {
         void FolderIdFromCsidl([In] int nCsidl, out Guid pfid);
 
