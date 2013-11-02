@@ -138,7 +138,7 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
                 {
                     Assert.IsNotNull(x.InnerException);
                     Assert.IsInstanceOfType(x.InnerException, typeof(COMException));
-                    Assert.AreEqual(unchecked((int)0x80004005), ((COMException)x.InnerException).HResult);
+                    Assert.AreEqual(unchecked((int)0x80004005), ((COMException)x.InnerException).ErrorCode);
                 }
             });
         }
@@ -147,8 +147,11 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
         {
             var sessionState = InitialSessionState.Create();
             sessionState.Commands.Add(new SessionStateCmdletEntry("Get-KnownFolder", typeof(GetKnownFolderCommand), null));
-            using (var psh = PowerShell.Create(sessionState))
+            using (var runspace = RunspaceFactory.CreateRunspace(sessionState))
+            using (var psh = PowerShell.Create())
             {
+                psh.Runspace = runspace;
+                runspace.Open();
                 var output = psh
                     .AddCommand("Get-KnownFolder")
                     .AddParameter("FolderId", KnownFolderIds.FOLDERID_Documents.value)

@@ -59,10 +59,10 @@ namespace BlaSoft.PowerShell.KnownFolders
                     try
                     {
                         var ids = new KNOWNFOLDERID[count];
-                        var ptr = pIds;
+                        var ptr = pIds.ToInt64();
                         for (uint u = 0; u < count; ++u)
                         {
-                            ids[u] = (KNOWNFOLDERID)Marshal.PtrToStructure(ptr, typeof(KNOWNFOLDERID));
+                            ids[u] = (KNOWNFOLDERID)Marshal.PtrToStructure((IntPtr)ptr, typeof(KNOWNFOLDERID));
                             ptr += Marshal.SizeOf(typeof(KNOWNFOLDERID));
                         }
 

@@ -35,8 +35,11 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
         public void Cannot_run_standard_command_with_empty_session_state()
         {
             var sessionState = InitialSessionState.Create();
-            using (var psh = PowerShell.Create(sessionState))
+            using (var runspace = RunspaceFactory.CreateRunspace(sessionState))
+            using (var psh = PowerShell.Create())
             {
+                psh.Runspace = runspace;
+                runspace.Open();
                 psh.AddCommand("Get-Location").Invoke();
                 Assert.Fail();
             }
