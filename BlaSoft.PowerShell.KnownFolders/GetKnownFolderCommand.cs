@@ -21,7 +21,7 @@ namespace BlaSoft.PowerShell.KnownFolders
         public Guid FolderId { get; set; }
 
         [Parameter(ParameterSetName = "All", Mandatory = true, Position = 0)]
-        public bool All { get; set; }
+        public SwitchParameter All { get; set; }
 
         protected override void BeginProcessing()
         {
@@ -46,11 +46,12 @@ namespace BlaSoft.PowerShell.KnownFolders
             else if (this.All)
             {
                 uint count = 0;
-                IntPtr pIds = IntPtr.Zero;
-                var h = GCHandle.Alloc(pIds, GCHandleType.Pinned);
+                object boxpIds = IntPtr.Zero;
+                var h = GCHandle.Alloc(boxpIds, GCHandleType.Pinned);
                 try
                 {
                     this.knownFolderManager.GetFolderIds(h.AddrOfPinnedObject(), ref count);
+                    IntPtr pIds = (IntPtr)boxpIds;
                     if (IntPtr.Zero == pIds)
                     {
                         throw new InvalidOperationException("GetFolderIds returned NULL");
