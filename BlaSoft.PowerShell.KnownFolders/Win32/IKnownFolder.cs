@@ -25,7 +25,7 @@ namespace BlaSoft.PowerShell.KnownFolders.Win32
 
         void GetRedirectionCapabilities(out KF_REDIRECTION_CAPABILITIES pCapabilities);
 
-        // A pointer to KNOWNFOLDER_DEFINITION, but should be cleaned up by calling FreeKnownFolderDefinitionFields
-        void GetFolderDefinition(out IntPtr pKFD);
+        // Should be cleaned up by calling FreeKnownFolderDefinitionFields
+        void GetFolderDefinition(out KNOWNFOLDER_DEFINITION_RAW pKFD);
     }
 }

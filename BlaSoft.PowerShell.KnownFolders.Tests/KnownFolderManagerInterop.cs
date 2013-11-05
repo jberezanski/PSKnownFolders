@@ -88,5 +88,25 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
                 h.Free();
             }
         }
+
+        [TestMethod]
+        public void Can_obtain_documents_folder_definition()
+        {
+            var knownFolderManager = (IKnownFolderManager)new KnownFolderManager();
+            IKnownFolder knownFolder;
+            var id = KnownFolderIds.FOLDERID_Documents;
+            knownFolderManager.GetFolder(ref id, out knownFolder);
+            KNOWNFOLDER_DEFINITION_RAW rawDef;
+            knownFolder.GetFolderDefinition(out rawDef);
+            try
+            {
+                var def = new KNOWNFOLDER_DEFINITION(rawDef);
+                Assert.AreEqual("Personal", def.name);
+            }
+            finally
+            {
+                rawDef.FreeKnownFolderDefinitionFields();
+            }
+        }
     }
 }
