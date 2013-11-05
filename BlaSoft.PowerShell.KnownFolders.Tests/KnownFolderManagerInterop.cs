@@ -31,6 +31,20 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
             var id = KnownFolderIds.FOLDERID_Documents;
             knownFolderManager.GetFolder(ref id, out knownFolder);
             Assert.IsNotNull(knownFolder);
+            knownFolder.GetId(out id);
+            Assert.AreEqual(KnownFolderIds.FOLDERID_Documents, id);
+        }
+
+        [TestMethod]
+        public void Can_obtain_documents_folder_by_name()
+        {
+            var knownFolderManager = (IKnownFolderManager)new KnownFolderManager();
+            IKnownFolder knownFolder;
+            knownFolderManager.GetFolderByName("Personal", out knownFolder);
+            Assert.IsNotNull(knownFolder);
+            KNOWNFOLDERID id;
+            knownFolder.GetId(out id);
+            Assert.AreEqual(KnownFolderIds.FOLDERID_Documents, id);
         }
 
         [TestMethod]
