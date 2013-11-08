@@ -56,7 +56,9 @@
     <Compile Include="Win32\KnownFolderIds.cs" />
     <Compile Include="Win32\KnownFolderManager.cs" />
     <Compile Include="Win32\KNOWNFOLDER_DEFINITION.cs" />
+    <Compile Include="Win32\KNOWNFOLDER_DEFINITION_RAW.cs" />
     <Compile Include="Win32\KNOWN_FOLDER_FLAG.cs" />
+    <Compile Include="Win32\SafeCoTaskMemHandle.cs" />
     <Compile Include="Win32\SICHINTF.cs" />
     <Compile Include="Win32\SIGDN.cs" />
   </ItemGroup>

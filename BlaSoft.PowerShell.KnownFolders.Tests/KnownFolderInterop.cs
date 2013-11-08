@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using BlaSoft.PowerShell.KnownFolders.Win32;
+using System.Runtime.CompilerServices;
 
 namespace BlaSoft.PowerShell.KnownFolders.Tests
 {
@@ -30,6 +31,13 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
         {
             KF_REDIRECTION_CAPABILITIES caps;
             this.documentsFolder.GetRedirectionCapabilities(out caps);
+        }
+
+        [TestMethod]
+        public void Can_obtain_documents_folder_definition()
+        {
+            var def = KNOWNFOLDER_DEFINITION.FromKnownFolder(this.documentsFolder);
+            Assert.AreEqual("Personal", def.name);
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 
 namespace BlaSoft.PowerShell.KnownFolders.Win32
@@ -40,74 +42,143 @@ namespace BlaSoft.PowerShell.KnownFolders.Win32
 
         public Guid ftidType;
 
-        public KNOWNFOLDER_DEFINITION(KNOWNFOLDER_DEFINITION_RAW d)
+        public static KNOWNFOLDER_DEFINITION FromKnownFolder(IKnownFolder knownFolder)
+        {
+            if (knownFolder == null)
+            {
+                throw new ArgumentNullException("knownFolder");
+            }
+
+            KNOWNFOLDER_DEFINITION def;
+
+            using (var handles = new KnownFolderDefinitionHandles())
+            {
+                KNOWNFOLDER_DEFINITION_RAW rawDef;
+
+                RuntimeHelpers.PrepareConstrainedRegions();
+                try
+                {
+                }
+                finally
+                {
+                    knownFolder.GetFolderDefinition(out rawDef);
+                    try
+                    {
+                        handles.SecureHandles(ref rawDef);
+                    }
+                    finally
+                    {
+                        // in case SecureHandles throws
+                        rawDef.FreeKnownFolderDefinitionFields();
+                    }
+                }
+
+                def = new KNOWNFOLDER_DEFINITION(ref rawDef, handles);
+            }
+
+            return def;
+        }
+
+        private KNOWNFOLDER_DEFINITION(ref KNOWNFOLDER_DEFINITION_RAW d, KnownFolderDefinitionHandles h)
         {
             this.category = d.category;
-            this.name = Marshal.PtrToStringUni(d.pszName);
-            this.description = Marshal.PtrToStringUni(d.pszDescription);
             this.fidParent = d.fidParent;
-            this.relativePath = Marshal.PtrToStringUni(d.pszRelativePath);
-            this.parsingName = Marshal.PtrToStringUni(d.pszParsingName);
-            this.toolTip = Marshal.PtrToStringUni(d.pszToolTip);
-            this.localizedName = Marshal.PtrToStringUni(d.pszLocalizedName);
-            this.icon = Marshal.PtrToStringUni(d.pszIcon);
-            this.security = Marshal.PtrToStringUni(d.pszSecurity);
             this.dwAttributes = d.dwAttributes;
             this.kfdFlags = d.kfdFlags;
             this.ftidType = d.ftidType;
+
+            this.name = UnmarshalString(h.hName, "hName");
+            this.description = UnmarshalString(h.hDescription, "hDescription");
+            this.relativePath = UnmarshalString(h.hRelativePath, "hRelativePath");
+            this.parsingName = UnmarshalString(h.hParsingName, "hParsingName");
+            this.toolTip = UnmarshalString(h.hToolTip, "hToolTip");
+            this.localizedName = UnmarshalString(h.hLocalizedName, "hLocalizedName");
+            this.icon = UnmarshalString(h.hIcon, "hIcon");
+            this.security = UnmarshalString(h.hSecurity, "hSecurity");
         }
-    }
 
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct KNOWNFOLDER_DEFINITION_RAW
-    {
-        public KF_CATEGORY category;
-
-        public IntPtr pszName;
-
-        public IntPtr pszDescription;
-
-        public Guid fidParent;
-
-        public IntPtr pszRelativePath;
-
-        public IntPtr pszParsingName;
-
-        public IntPtr pszToolTip;
-
-        public IntPtr pszLocalizedName;
-
-        public IntPtr pszIcon;
-
-        public IntPtr pszSecurity;
-
-        public uint dwAttributes;
-
-        public KF_DEFINITION_FLAGS kfdFlags;
-
-        public Guid ftidType;
-
-        public void FreeKnownFolderDefinitionFields()
+        private static string UnmarshalString(SafeCoTaskMemHandle hValue, string handleName)
         {
-            /*
-http://www.winehq.org/pipermail/wine-cvs/2011-June/078517.html
-+cpp_quote("    CoTaskMemFree(pKFD->pszName);")
-+cpp_quote("    CoTaskMemFree(pKFD->pszDescription);")
-+cpp_quote("    CoTaskMemFree(pKFD->pszRelativePath);")
-+cpp_quote("    CoTaskMemFree(pKFD->pszParsingName);")
-+cpp_quote("    CoTaskMemFree(pKFD->pszTooltip);")
-+cpp_quote("    CoTaskMemFree(pKFD->pszLocalizedName);")
-+cpp_quote("    CoTaskMemFree(pKFD->pszIcon);")
-+cpp_quote("    CoTaskMemFree(pKFD->pszSecurity);")
-             * * */
-            Marshal.FreeCoTaskMem(this.pszName);
-            Marshal.FreeCoTaskMem(this.pszDescription);
-            Marshal.FreeCoTaskMem(this.pszRelativePath);
-            Marshal.FreeCoTaskMem(this.pszParsingName);
-            Marshal.FreeCoTaskMem(this.pszToolTip);
-            Marshal.FreeCoTaskMem(this.pszLocalizedName);
-            Marshal.FreeCoTaskMem(this.pszIcon);
-            Marshal.FreeCoTaskMem(this.pszSecurity);
+            string value;
+            bool success;
+
+            RuntimeHelpers.PrepareConstrainedRegions();
+            try
+            {
+            }
+            finally
+            {
+                success = false;
+                hValue.DangerousAddRef(ref success);
+                if (success)
+                {
+                    value = Marshal.PtrToStringUni(hValue.DangerousGetHandle());
+                    hValue.DangerousRelease();
+                }
+                else
+                {
+                    value = null;
+                }
+            }
+
+            if (!success)
+            {
+                throw new InvalidOperationException("Failed to AddRef on " + handleName);
+            }
+
+            return value;
+        }
+
+        private sealed class KnownFolderDefinitionHandles : IDisposable
+        {
+            public readonly SafeCoTaskMemHandle hName = new SafeCoTaskMemHandle();
+
+            public readonly SafeCoTaskMemHandle hDescription = new SafeCoTaskMemHandle();
+
+            public readonly SafeCoTaskMemHandle hRelativePath = new SafeCoTaskMemHandle();
+
+            public readonly SafeCoTaskMemHandle hParsingName = new SafeCoTaskMemHandle();
+
+            public readonly SafeCoTaskMemHandle hToolTip = new SafeCoTaskMemHandle();
+
+            public readonly SafeCoTaskMemHandle hLocalizedName = new SafeCoTaskMemHandle();
+
+            public readonly SafeCoTaskMemHandle hIcon = new SafeCoTaskMemHandle();
+
+            public readonly SafeCoTaskMemHandle hSecurity = new SafeCoTaskMemHandle();
+
+            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+            public void SecureHandles(ref KNOWNFOLDER_DEFINITION_RAW d)
+            {
+                SecureHandle(this.hName, ref d.pszName);
+                SecureHandle(this.hDescription, ref d.pszDescription);
+                SecureHandle(this.hRelativePath, ref d.pszRelativePath);
+                SecureHandle(this.hParsingName, ref d.pszParsingName);
+                SecureHandle(this.hToolTip, ref d.pszToolTip);
+                SecureHandle(this.hLocalizedName, ref d.pszLocalizedName);
+                SecureHandle(this.hIcon, ref d.pszIcon);
+                SecureHandle(this.hSecurity, ref d.pszSecurity);
+            }
+
+            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+            private static void SecureHandle(SafeCoTaskMemHandle handle, ref IntPtr ptr)
+            {
+                handle.SetHandle(ptr);
+                ptr = IntPtr.Zero;
+            }
+
+            public void Dispose()
+            {
+                this.hName.Dispose();
+                this.hDescription.Dispose();
+                this.hRelativePath.Dispose();
+                this.hParsingName.Dispose();
+                this.hToolTip.Dispose();
+                this.hLocalizedName.Dispose();
+                this.hIcon.Dispose();
+                this.hSecurity.Dispose();
+                GC.SuppressFinalize(this);
+            }
         }
     }
 }
