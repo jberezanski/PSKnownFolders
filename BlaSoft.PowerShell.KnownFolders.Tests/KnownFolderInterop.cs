@@ -39,5 +39,21 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
             var def = KNOWNFOLDER_DEFINITION.FromKnownFolder(this.documentsFolder);
             Assert.AreEqual("Personal", def.name);
         }
+
+        [TestMethod]
+        public void Can_obtain_documents_folder_idlist()
+        {
+            SafeCoTaskMemHandle pidl;
+            this.documentsFolder.GetIDList(KNOWN_FOLDER_FLAG.KF_FLAG_SIMPLE_IDLIST, out pidl);
+            Assert.IsFalse(pidl.IsInvalid);
+            try
+            {
+                // TODO: do something with the PIDL to verify it
+            }
+            finally
+            {
+                pidl.Dispose();
+            }
+        }
     }
 }

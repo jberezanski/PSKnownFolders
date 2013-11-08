@@ -19,7 +19,7 @@ namespace BlaSoft.PowerShell.KnownFolders.Win32
 
         void SetPath([In] KNOWN_FOLDER_FLAG dwFlags, [In, MarshalAs(UnmanagedType.LPWStr)] string pszPath);
 
-        void GetIDList([In] KNOWN_FOLDER_FLAG dwFlags, [Out, ComAliasName("ShellObjects.wirePIDL")] IntPtr ppidl);
+        void GetIDList([In] KNOWN_FOLDER_FLAG dwFlags, [Out, ComAliasName("ShellObjects.wirePIDL")] out SafeCoTaskMemHandle ppidl);
 
         void GetFolderType(out FOLDERTYPEID pftid);
 
