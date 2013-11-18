@@ -31,7 +31,8 @@ namespace BlaSoft.PowerShell.KnownFolders.Win32
 
         void FindFolderFromIDList([In] IntPtr pidl, [MarshalAs(UnmanagedType.Interface)] out IKnownFolder ppkf);
 
-        void Redirect(
+        [PreserveSig]
+        HResult Redirect(
             [In] ref KNOWNFOLDERID rfid, 
             [In, Optional] IntPtr hwnd, 
             [In] KF_REDIRECT_FLAGS Flags,

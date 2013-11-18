@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using BlaSoft.PowerShell.KnownFolders.Win32;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -87,6 +89,181 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
             {
                 h.Free();
             }
+        }
+
+        [TestMethod]
+        public void Cannot_redirect_Links_to_invalid_path()
+        {
+            var knownFolderManager = (IKnownFolderManager)new KnownFolderManager();
+            var id = KnownFolderIds.FOLDERID_Links;
+            string error;
+            var hr = knownFolderManager.Redirect(
+                ref id,
+                IntPtr.Zero,
+                KF_REDIRECT_FLAGS.KF_REDIRECT_NONE,
+                "g:e:f*&#%^NIY",
+                0,
+                null,
+                out error);
+            Assert.AreEqual(HResult.WIN32_E_PATHNOTFOUND, hr);
+        }
+
+        [TestMethod]
+        public void Can_check_if_Links_is_redirected_to_itself()
+        {
+            var knownFolderManager = (IKnownFolderManager)new KnownFolderManager();
+            IKnownFolder knownFolder;
+            var id = KnownFolderIds.FOLDERID_Links;
+            knownFolderManager.GetFolder(ref id, out knownFolder);
+            string currentPath;
+            knownFolder.GetPath(KNOWN_FOLDER_FLAG.KF_FLAG_NONE, out currentPath);
+            string error;
+            var hr = knownFolderManager.Redirect(
+                ref id,
+                IntPtr.Zero,
+                KF_REDIRECT_FLAGS.KF_REDIRECT_CHECK_ONLY,
+                currentPath,
+                0,
+                null,
+                out error);
+            Assert.AreEqual(HResult.S_OK, hr);
+        }
+
+        [TestMethod]
+        public void Can_check_if_Links_is_not_already_redirected()
+        {
+            var knownFolderManager = (IKnownFolderManager)new KnownFolderManager();
+            var id = KnownFolderIds.FOLDERID_Links;
+            string newPath = GetTempRedirectionPath();
+            string error;
+            var hr = knownFolderManager.Redirect(
+                ref id,
+                IntPtr.Zero,
+                KF_REDIRECT_FLAGS.KF_REDIRECT_CHECK_ONLY,
+                newPath,
+                0,
+                null,
+                out error);
+            Assert.AreEqual(HResult.S_FALSE, hr);
+        }
+
+        [TestMethod]
+        public void Can_redirect_Links_without_moving_existing_data()
+        {
+            var knownFolderManager = (IKnownFolderManager)new KnownFolderManager();
+            IKnownFolder knownFolder;
+            var id = KnownFolderIds.FOLDERID_Links;
+            knownFolderManager.GetFolder(ref id, out knownFolder);
+            string currentPath;
+            knownFolder.GetPath(KNOWN_FOLDER_FLAG.KF_FLAG_NONE, out currentPath);
+            string newPath = GetTempRedirectionPath();
+            string error;
+            HResult hr;
+            hr = knownFolderManager.Redirect(
+                ref id,
+                IntPtr.Zero,
+                KF_REDIRECT_FLAGS.KF_REDIRECT_NONE,
+                newPath,
+                0,
+                null,
+                out error);
+            Assert.AreEqual(HResult.S_OK, hr);
+            hr = knownFolderManager.Redirect(
+                ref id,
+                IntPtr.Zero,
+                KF_REDIRECT_FLAGS.KF_REDIRECT_NONE,
+                currentPath,
+                0,
+                null,
+                out error);
+            Assert.AreEqual(HResult.S_OK, hr);
+            DeleteTempRedirectionDirectory(newPath);
+        }
+
+        [TestMethod]
+        public void Can_redirect_Links_with_copying_existing_data()
+        {
+            var knownFolderManager = (IKnownFolderManager)new KnownFolderManager();
+            IKnownFolder knownFolder;
+            var id = KnownFolderIds.FOLDERID_Links;
+            knownFolderManager.GetFolder(ref id, out knownFolder);
+            string currentPath;
+            knownFolder.GetPath(KNOWN_FOLDER_FLAG.KF_FLAG_NONE, out currentPath);
+            string newPath = GetTempRedirectionPath();
+            string error;
+            HResult hr;
+            hr = knownFolderManager.Redirect(
+                ref id,
+                IntPtr.Zero,
+                KF_REDIRECT_FLAGS.KF_REDIRECT_COPY_CONTENTS,
+                newPath,
+                0,
+                null,
+                out error);
+            Assert.AreEqual(HResult.S_OK, hr);
+            hr = knownFolderManager.Redirect(
+                ref id,
+                IntPtr.Zero,
+                KF_REDIRECT_FLAGS.KF_REDIRECT_NONE,
+                currentPath,
+                0,
+                null,
+                out error);
+            Assert.AreEqual(HResult.S_OK, hr);
+            DeleteTempRedirectionDirectory(newPath);
+        }
+
+        [TestMethod]
+        public void Can_redirect_Links_with_moving_existing_data()
+        {
+            var knownFolderManager = (IKnownFolderManager)new KnownFolderManager();
+            IKnownFolder knownFolder;
+            var id = KnownFolderIds.FOLDERID_Links;
+            knownFolderManager.GetFolder(ref id, out knownFolder);
+            string currentPath;
+            knownFolder.GetPath(KNOWN_FOLDER_FLAG.KF_FLAG_NONE, out currentPath);
+            string newPath = GetTempRedirectionPath();
+            string error;
+            HResult hr;
+            hr = knownFolderManager.Redirect(
+                ref id,
+                IntPtr.Zero,
+                KF_REDIRECT_FLAGS.KF_REDIRECT_COPY_CONTENTS | KF_REDIRECT_FLAGS.KF_REDIRECT_DEL_SOURCE_CONTENTS,
+                newPath,
+                0,
+                null,
+                out error);
+            Assert.AreEqual(HResult.S_OK, hr);
+            hr = knownFolderManager.Redirect(
+                ref id,
+                IntPtr.Zero,
+                KF_REDIRECT_FLAGS.KF_REDIRECT_COPY_CONTENTS | KF_REDIRECT_FLAGS.KF_REDIRECT_DEL_SOURCE_CONTENTS,
+                currentPath,
+                0,
+                null,
+                out error);
+            Assert.AreEqual(HResult.S_OK, hr);
+            DeleteTempRedirectionDirectory(newPath);
+        }
+
+        private static void DeleteTempRedirectionDirectory(string newPath)
+        {
+            if (Directory.Exists(newPath))
+            {
+                var attrs = File.GetAttributes(newPath);
+                if ((attrs & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                {
+                    File.SetAttributes(newPath, attrs & (~FileAttributes.ReadOnly));
+                }
+
+                Directory.Delete(newPath, true);
+            }
+        }
+
+        private static string GetTempRedirectionPath()
+        {
+            string newPath = Path.Combine(Path.Combine(Path.GetTempPath(), Assembly.GetExecutingAssembly().GetName().Name), Guid.NewGuid().ToString("N"));
+            return newPath;
         }
     }
 }
