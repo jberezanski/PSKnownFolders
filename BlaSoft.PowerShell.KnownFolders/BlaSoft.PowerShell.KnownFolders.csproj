@@ -43,6 +43,7 @@
     <Compile Include="KnownFolder.cs" />
     <Compile Include="KnownFolderRedirectionCapabilitiesExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RedirectKnownFolderCommand.cs" />
     <Compile Include="Win32\FFFP_MODE.cs" />
     <Compile Include="Win32\FOLDERTYPEID.cs" />
     <Compile Include="Win32\HResult.cs" />
