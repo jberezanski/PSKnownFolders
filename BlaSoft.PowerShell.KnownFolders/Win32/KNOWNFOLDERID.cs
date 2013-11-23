@@ -8,6 +8,11 @@ namespace BlaSoft.PowerShell.KnownFolders.Win32
     {
         public Guid value;
 
+        public KNOWNFOLDERID(Guid guid)
+        {
+            this.value = guid;
+        }
+
         public KNOWNFOLDERID(string id)
         {
             this.value = new Guid(id);

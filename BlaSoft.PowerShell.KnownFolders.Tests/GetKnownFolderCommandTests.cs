@@ -20,7 +20,7 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
         }
 
         [TestMethod]
-        public void Can_obtain_user_documents_folder()
+        public void Can_obtain_user_documents_folder_by_id()
         {
             TestDocumentsFolderLowLevel(output =>
             {
@@ -29,6 +29,7 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
                 var psObj = output.First();
                 Assert.IsNotNull(psObj);
                 Assert.IsInstanceOfType(psObj.BaseObject, typeof(KnownFolder));
+                Assert.AreEqual(KnownFolderIds.FOLDERID_Documents.value, ((KnownFolder)psObj.BaseObject).FolderId);
             });
         }
 
@@ -143,7 +144,101 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
             });
         }
 
-        private static void TestDocumentsFolderLowLevel(Action<Collection<PSObject>> test)
+        [TestMethod]
+        public void Can_obtain_all_folders()
+        {
+            TestCommand(
+                psh => psh.AddParameter("All"),
+                output =>
+                {
+                    Assert.IsNotNull(output);
+                    Assert.IsTrue(1 < output.Count);
+                    CollectionAssert.AllItemsAreNotNull(output);
+                    CollectionAssert.AllItemsAreUnique(output);
+                    CollectionAssert.AllItemsAreInstancesOfType(output.Select(pso => pso.BaseObject).ToArray(), typeof(KnownFolder));
+                });
+        }
+
+        [TestMethod]
+        public void All_is_implicit()
+        {
+            TestCommand(
+                _ => { },
+                output =>
+                {
+                    Assert.IsNotNull(output);
+                    Assert.IsTrue(1 < output.Count);
+                    CollectionAssert.AllItemsAreNotNull(output);
+                    CollectionAssert.AllItemsAreUnique(output);
+                    CollectionAssert.AllItemsAreInstancesOfType(output.Select(pso => pso.BaseObject).ToArray(), typeof(KnownFolder));
+                });
+        }
+
+        [TestMethod]
+        public void Can_obtain_user_documents_folder_by_name()
+        {
+            TestCommand(
+               psh => psh.AddParameter("Name", "Personal"),
+               output =>
+               {
+                   Assert.IsNotNull(output);
+                   Assert.AreEqual(1, output.Count);
+                   var psObj = output.First();
+                   Assert.IsNotNull(psObj);
+                   Assert.IsInstanceOfType(psObj.BaseObject, typeof(KnownFolder));
+                   Assert.AreEqual(KnownFolderIds.FOLDERID_Documents.value, ((KnownFolder)psObj.BaseObject).FolderId);
+               });
+        }
+
+        [TestMethod]
+        public void Can_obtain_user_documents_folder_by_SpecialFolder_using_canonical_name()
+        {
+            TestCommand(
+               psh => psh.AddParameter("SpecialFolder", Environment.SpecialFolder.Personal),
+               output =>
+               {
+                   Assert.IsNotNull(output);
+                   Assert.AreEqual(1, output.Count);
+                   var psObj = output.First();
+                   Assert.IsNotNull(psObj);
+                   Assert.IsInstanceOfType(psObj.BaseObject, typeof(KnownFolder));
+                   Assert.AreEqual(KnownFolderIds.FOLDERID_Documents.value, ((KnownFolder)psObj.BaseObject).FolderId);
+               });
+        }
+
+        [TestMethod]
+        public void Can_obtain_user_documents_folder_by_SpecialFolder_using_alternate_name()
+        {
+            TestCommand(
+               psh => psh.AddParameter("SpecialFolder", Environment.SpecialFolder.MyDocuments),
+               output =>
+               {
+                   Assert.IsNotNull(output);
+                   Assert.AreEqual(1, output.Count);
+                   var psObj = output.First();
+                   Assert.IsNotNull(psObj);
+                   Assert.IsInstanceOfType(psObj.BaseObject, typeof(KnownFolder));
+                   Assert.AreEqual(KnownFolderIds.FOLDERID_Documents.value, ((KnownFolder)psObj.BaseObject).FolderId);
+               });
+        }
+
+        [TestMethod]
+        public void Can_obtain_user_desktop_folder_by_SpecialFolder()
+        {
+            TestCommand(
+               psh => psh.AddParameter("SpecialFolder", Environment.SpecialFolder.Desktop),
+               output =>
+               {
+                   Assert.IsNotNull(output);
+                   Assert.AreEqual(1, output.Count);
+                   var psObj = output.First();
+                   Assert.IsNotNull(psObj);
+                   Assert.IsInstanceOfType(psObj.BaseObject, typeof(KnownFolder));
+                   Assert.AreEqual(KnownFolderIds.FOLDERID_Desktop.value, ((KnownFolder)psObj.BaseObject).FolderId);
+               });
+        }
+
+        private static void TestCommand(Action<PowerShell> setupCommand, Action<Collection<PSObject>> verify)
         {
             var sessionState = InitialSessionState.Create();
             sessionState.Commands.Add(new SessionStateCmdletEntry("Get-KnownFolder", typeof(GetKnownFolderCommand), null));
@@ -152,12 +247,16 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
             {
                 psh.Runspace = runspace;
                 runspace.Open();
-                var output = psh
-                    .AddCommand("Get-KnownFolder")
-                    .AddParameter("FolderId", KnownFolderIds.FOLDERID_Documents.value)
-                    .Invoke();
-                test(output);
+                psh.AddCommand("Get-KnownFolder");
+                setupCommand(psh);
+                var output = psh.Invoke();
+                verify(output);
             }
+        }
+
+        private static void TestDocumentsFolderLowLevel(Action<Collection<PSObject>> verify)
+        {
+            TestCommand(psh => psh.AddParameter("FolderId", KnownFolderIds.FOLDERID_Documents.value), verify);
         }
 
         private static void TestDocumentsFolder(Action<PSObject> test)

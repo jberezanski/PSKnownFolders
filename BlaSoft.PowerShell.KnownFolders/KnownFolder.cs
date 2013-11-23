@@ -3,7 +3,7 @@ using BlaSoft.PowerShell.KnownFolders.Win32;
 
 namespace BlaSoft.PowerShell.KnownFolders
 {
-    public class KnownFolder
+    public sealed class KnownFolder
     {
         private IKnownFolder nativeKnownFolder;
 
