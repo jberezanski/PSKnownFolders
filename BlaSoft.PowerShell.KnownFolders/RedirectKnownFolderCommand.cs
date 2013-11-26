@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Management.Automation;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -6,7 +7,7 @@ using BlaSoft.PowerShell.KnownFolders.Win32;
 
 namespace BlaSoft.PowerShell.KnownFolders
 {
-    [Cmdlet(VerbsCommon.Move, "KnownFolder", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    [Cmdlet(VerbsCommon.Move, "KnownFolder", DefaultParameterSetName = "SingleFolder", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     [OutputType(typeof(KnownFolder))]
     public sealed class RedirectKnownFolderCommand : PSCmdlet
     {
@@ -16,12 +17,16 @@ namespace BlaSoft.PowerShell.KnownFolders
 
         private bool noToAll;
 
-        [Parameter(ParameterSetName = "KnownFolder", Mandatory = true, ValueFromPipeline = true)]
-        [ValidateNotNull]
+        [Parameter(ParameterSetName = "SingleFolder", Mandatory = true, Position = 0)]
+        public KnownFolder SingleFolder { get; set; }
+
+        [Parameter(ParameterSetName = "SingleFolder", Mandatory = true, Position = 1)]
+        public string NewPath { get; set; }
+
+        [Parameter(ParameterSetName = "MultipleFolders", Mandatory = true, ValueFromPipeline = true)]
         public KnownFolder Folder { get; set; }
 
-        [Parameter(ParameterSetName = "KnownFolder", Mandatory = true, Position = 0)]
-        [ValidateNotNullOrEmpty]
+        [Parameter(ParameterSetName = "MultipleFolders", Mandatory = true, Position = 0)]
         public string Destination { get; set; }
 
         [Parameter]
@@ -40,14 +45,46 @@ namespace BlaSoft.PowerShell.KnownFolders
 
         protected override void ProcessRecord()
         {
-            if (!this.Folder.CanRedirect)
+            switch (this.ParameterSetName)
             {
-                throw new InvalidOperationException("Folder cannot be redirected.");
+                case "SingleFolder":
+                    this.RedirectOneFolder(this.SingleFolder, this.NewPath);
+                    break;
+                case "MultipleFolders":
+                    var newPath = DetermineNewPath(this.Folder, this.Destination);
+                    this.RedirectOneFolder(this.Folder, newPath);
+                    break;
+                default:
+                    throw new ArgumentException("Unsupported parameter set name: " + this.ParameterSetName);
+            }
+        }
+
+        private string DetermineNewPath(KnownFolder knownFolder, string destinationPath)
+        {
+            var existingPath = knownFolder.Path;
+            if (string.IsNullOrEmpty(existingPath))
+            {
+                throw new InvalidOperationException(string.Format("Unable to determine new path of folder '{0}': existing path is empty.", knownFolder.Name));
             }
 
-            string currentPath = this.Folder.Path;
-            var newPath = this.Destination;
-            if (!this.ShouldProcess(this.Folder.Name, string.Format("Redirect from {0} to {1}", currentPath, newPath)))
+            var existingDirectoryName = Path.GetFileName(existingPath);
+            if (string.IsNullOrEmpty(existingDirectoryName))
+            {
+                throw new InvalidOperationException(string.Format("Unable to determine new path of folder '{0}': cannot determine existing directory name.", knownFolder.Name));
+            }
+
+            return Path.Combine(destinationPath, existingDirectoryName);
+        }
+
+        private void RedirectOneFolder(KnownFolder folder, string newPath)
+        {
+            if (!folder.CanRedirect)
+            {
+                throw new InvalidOperationException(string.Format("Folder '{0}' cannot be redirected.", folder.Name));
+            }
+
+            string currentPath = folder.Path;
+            if (!this.ShouldProcess(folder.Name, string.Format("Redirect from {0} to {1}", currentPath, newPath)))
             {
                 return;
             }
@@ -57,7 +94,7 @@ namespace BlaSoft.PowerShell.KnownFolders
                 return;
             }
 
-            var id = new KNOWNFOLDERID(this.Folder.FolderId);
+            var id = new KNOWNFOLDERID(folder.FolderId);
             KF_REDIRECT_FLAGS flags = KF_REDIRECT_FLAGS.KF_REDIRECT_NONE;
             if (this.CheckOnly)
             {
@@ -95,7 +132,7 @@ namespace BlaSoft.PowerShell.KnownFolders
 
             if (this.PassThru)
             {
-                this.WriteObject(this.Folder);
+                this.WriteObject(folder);
             }
         }
     }
