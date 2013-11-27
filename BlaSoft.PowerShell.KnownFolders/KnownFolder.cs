@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.InteropServices;
 using BlaSoft.PowerShell.KnownFolders.Win32;
 
 namespace BlaSoft.PowerShell.KnownFolders
@@ -30,7 +32,23 @@ namespace BlaSoft.PowerShell.KnownFolders
             get
             {
                 string path;
-                this.nativeKnownFolder.GetPath(KNOWN_FOLDER_FLAG.KF_FLAG_NONE, out path);
+                try
+                {
+                    this.nativeKnownFolder.GetPath(KNOWN_FOLDER_FLAG.KF_FLAG_NONE, out path);
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    return null;
+                }
+                catch (FileNotFoundException)
+                {
+                    return null;
+                }
+                catch (COMException)
+                {
+                    return null;
+                }
+
                 return path;
             }
         }
@@ -66,12 +84,20 @@ namespace BlaSoft.PowerShell.KnownFolders
             }
         }
 
-        public Guid FolderTypeId
+        public Guid? FolderTypeId
         {
             get
             {
                 FOLDERTYPEID typeid;
-                this.nativeKnownFolder.GetFolderType(out typeid);
+                try
+                {
+                    this.nativeKnownFolder.GetFolderType(out typeid);
+                }
+                catch (COMException)
+                {
+                    return null;
+                }
+
                 return typeid.value;
             }
         }

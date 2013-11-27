@@ -124,23 +124,14 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
         }
 
         [TestMethod]
-        public void Cannot_obtain_property_FolderTypeId_of_user_documents_folder()
+        public void Property_FolderTypeId_of_user_documents_folder_is_null()
         {
             TestDocumentsFolder(psObj =>
             {
                 var folderTypeIdProp = psObj.Properties["FolderTypeId"];
                 Assert.IsNotNull(folderTypeIdProp);
-                try
-                {
-                    var folderTypeIdVal = folderTypeIdProp.Value;
-                    Assert.Fail();
-                }
-                catch (GetValueInvocationException x)
-                {
-                    Assert.IsNotNull(x.InnerException);
-                    Assert.IsInstanceOfType(x.InnerException, typeof(COMException));
-                    Assert.AreEqual(unchecked((int)0x80004005), ((COMException)x.InnerException).ErrorCode);
-                }
+                var folderTypeIdVal = folderTypeIdProp.Value;
+                Assert.IsNull(folderTypeIdVal);
             });
         }
 
