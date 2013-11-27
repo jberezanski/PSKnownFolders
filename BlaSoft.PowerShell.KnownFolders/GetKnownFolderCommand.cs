@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using System.Runtime.InteropServices;
@@ -14,14 +15,13 @@ namespace BlaSoft.PowerShell.KnownFolders
         private IKnownFolderManager knownFolderManager;
 
         [Parameter(ParameterSetName = "ByName", Mandatory = true, Position = 0)]
-        [ValidateNotNullOrEmpty]
-        public string Name { get; set; }
+        public string[] Name { get; set; }
 
         [Parameter(ParameterSetName = "ByFolderId", Mandatory = true, Position = 0)]
-        public Guid FolderId { get; set; }
+        public Guid[] FolderId { get; set; }
 
         [Parameter(ParameterSetName = "BySpecialFolder", Mandatory = true, Position = 0)]
-        public Environment.SpecialFolder SpecialFolder { get; set; }
+        public Environment.SpecialFolder[] SpecialFolder { get; set; }
 
         [Parameter(ParameterSetName = "All", Position = 0)]
         public SwitchParameter All { get; set; }
@@ -40,12 +40,8 @@ namespace BlaSoft.PowerShell.KnownFolders
                     result = GetByName(this.Name);
                     break;
                 case "BySpecialFolder":
-                    if (!Enum.IsDefined(typeof(Environment.SpecialFolder), this.SpecialFolder))
-                    {
-                        throw new ArgumentException("Invalid SpecialFolder value");
-                    }
-
-                    result = GetByName(this.SpecialFolder.ToString());
+                    Validate(this.SpecialFolder);
+                    result = GetByName(this.SpecialFolder.Select(sf => sf.ToString()));
                     break;
                 case "ByFolderId":
                     result = GetById(this.FolderId);
@@ -54,7 +50,7 @@ namespace BlaSoft.PowerShell.KnownFolders
                     result = GetAll();
                     break;
                 default:
-                    throw new ArgumentException("Unsupported parameter set name");
+                    throw new ArgumentException("Unsupported parameter set name: " + this.ParameterSetName);
             }
 
             foreach (var kf in result)
@@ -63,14 +59,26 @@ namespace BlaSoft.PowerShell.KnownFolders
             }
         }
 
+        private static void Validate(IEnumerable<Environment.SpecialFolder> specialFolders)
+        {
+            foreach (var specialFolder in specialFolders)
+            {
+                if (!Enum.IsDefined(typeof(Environment.SpecialFolder), specialFolder))
+                {
+                    throw new ArgumentException("Invalid SpecialFolder value: " + specialFolder);
+                }
+            }
+        }
+
         private IEnumerable<IKnownFolder> GetAll()
         {
-            IEnumerable<IKnownFolder> result;
-            uint count = 0;
+            KNOWNFOLDERID[] ids;
+
             object boxpIds = IntPtr.Zero;
             var h = GCHandle.Alloc(boxpIds, GCHandleType.Pinned);
             try
             {
+                uint count = 0;
                 this.knownFolderManager.GetFolderIds(h.AddrOfPinnedObject(), ref count);
                 IntPtr pIds = (IntPtr)boxpIds;
                 if (IntPtr.Zero == pIds)
@@ -80,15 +88,13 @@ namespace BlaSoft.PowerShell.KnownFolders
 
                 try
                 {
-                    var ids = new KNOWNFOLDERID[count];
+                    ids = new KNOWNFOLDERID[count];
                     var ptr = pIds.ToInt64();
                     for (uint u = 0; u < count; ++u)
                     {
                         ids[u] = (KNOWNFOLDERID)Marshal.PtrToStructure((IntPtr)ptr, typeof(KNOWNFOLDERID));
                         ptr += Marshal.SizeOf(typeof(KNOWNFOLDERID));
                     }
-
-                    result = ids.Select(kfi => this.GetKnownFolderById(kfi));
                 }
                 finally
                 {
@@ -100,30 +106,48 @@ namespace BlaSoft.PowerShell.KnownFolders
                 h.Free();
             }
 
+            var result = ids.Select(kfi => this.GetKnownFolderById(kfi));
+
             return result;
         }
 
-        private IEnumerable<IKnownFolder> GetByName(string name)
+        private IEnumerable<IKnownFolder> GetByName(IEnumerable<string> names)
         {
-            IKnownFolder nativeKnownFolder;
-            this.knownFolderManager.GetFolderByName(name, out nativeKnownFolder);
-            var result = new[] { nativeKnownFolder };
-            return result;
+            return names.Select(name => this.GetKnownFolderByName(name));
         }
 
-        private IEnumerable<IKnownFolder> GetById(Guid folderId)
+        private IEnumerable<IKnownFolder> GetById(IEnumerable<Guid> folderIds)
         {
-            IKnownFolder nativeKnownFolder;
-            var knownFolderId = new KNOWNFOLDERID(folderId.ToString());
-            nativeKnownFolder = this.GetKnownFolderById(knownFolderId);
-            var result = new[] { nativeKnownFolder };
-            return result;
+            return folderIds.Select(folderId => this.GetKnownFolderById(new KNOWNFOLDERID(folderId.ToString())));
         }
 
         private IKnownFolder GetKnownFolderById(KNOWNFOLDERID knownFolderId)
         {
             IKnownFolder nativeKnownFolder;
-            this.knownFolderManager.GetFolder(ref knownFolderId, out nativeKnownFolder);
+            try
+            {
+                this.knownFolderManager.GetFolder(ref knownFolderId, out nativeKnownFolder);
+            }
+            catch (FileNotFoundException x)
+            {
+                throw new FileNotFoundException(string.Format("Known folder not found: {0}", knownFolderId.value), x);
+            }
+
+            return nativeKnownFolder;
+        }
+
+        private IKnownFolder GetKnownFolderByName(string name)
+        {
+            IKnownFolder nativeKnownFolder;
+            try
+            {
+                this.knownFolderManager.GetFolderByName(name, out nativeKnownFolder);
+            }
+            catch (FileNotFoundException x)
+            {
+                throw new FileNotFoundException(string.Format("Known folder not found: '{0}'", name), x);
+            }
+
             return nativeKnownFolder;
         }
     }

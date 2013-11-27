@@ -238,6 +238,85 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
                });
         }
 
+        [TestMethod]
+        public void Can_obtain_common_documents_folder_by_id()
+        {
+            TestCommand(
+               psh => psh.AddParameter("FolderId", KnownFolderIds.FOLDERID_PublicDocuments.value),
+               output =>
+               {
+                   Assert.IsNotNull(output);
+                   Assert.AreEqual(1, output.Count);
+                   var psObj = output.First();
+                   Assert.IsNotNull(psObj);
+                   Assert.IsInstanceOfType(psObj.BaseObject, typeof(KnownFolder));
+                   Assert.AreEqual(KnownFolderIds.FOLDERID_PublicDocuments.value, ((KnownFolder)psObj.BaseObject).FolderId);
+               });
+        }
+
+        [TestMethod]
+        public void Can_obtain_multiple_user_folders_by_name()
+        {
+            TestCommand(
+               psh => psh.AddParameter("Name", new[] { "Personal", "Desktop" }),
+               output =>
+               {
+                   Assert.IsNotNull(output);
+                   Assert.AreEqual(2, output.Count);
+                   PSObject psObj;
+                   psObj = output[0];
+                   Assert.IsNotNull(psObj);
+                   Assert.IsInstanceOfType(psObj.BaseObject, typeof(KnownFolder));
+                   Assert.AreEqual(KnownFolderIds.FOLDERID_Documents.value, ((KnownFolder)psObj.BaseObject).FolderId);
+                   psObj = output[1];
+                   Assert.IsNotNull(psObj);
+                   Assert.IsInstanceOfType(psObj.BaseObject, typeof(KnownFolder));
+                   Assert.AreEqual(KnownFolderIds.FOLDERID_Desktop.value, ((KnownFolder)psObj.BaseObject).FolderId);
+               });
+        }
+
+        [TestMethod]
+        public void Can_obtain_multiple_user_folders_by_SpecialFolder()
+        {
+            TestCommand(
+               psh => psh.AddParameter("SpecialFolder", new[] { Environment.SpecialFolder.Desktop, Environment.SpecialFolder.Favorites }),
+               output =>
+               {
+                   Assert.IsNotNull(output);
+                   Assert.AreEqual(2, output.Count);
+                   PSObject psObj;
+                   psObj = output[0];
+                   Assert.IsNotNull(psObj);
+                   Assert.IsInstanceOfType(psObj.BaseObject, typeof(KnownFolder));
+                   Assert.AreEqual(KnownFolderIds.FOLDERID_Desktop.value, ((KnownFolder)psObj.BaseObject).FolderId);
+                   psObj = output[1];
+                   Assert.IsNotNull(psObj);
+                   Assert.IsInstanceOfType(psObj.BaseObject, typeof(KnownFolder));
+                   Assert.AreEqual(KnownFolderIds.FOLDERID_Favorites.value, ((KnownFolder)psObj.BaseObject).FolderId);
+               });
+        }
+
+        [TestMethod]
+        public void Can_obtain_multiple_user_folders_by_id()
+        {
+            TestCommand(
+               psh => psh.AddParameter("FolderId", new[] { KnownFolderIds.FOLDERID_Documents.value, KnownFolderIds.FOLDERID_Downloads.value }),
+               output =>
+               {
+                   Assert.IsNotNull(output);
+                   Assert.AreEqual(2, output.Count);
+                   PSObject psObj;
+                   psObj = output[0];
+                   Assert.IsNotNull(psObj);
+                   Assert.IsInstanceOfType(psObj.BaseObject, typeof(KnownFolder));
+                   Assert.AreEqual(KnownFolderIds.FOLDERID_Documents.value, ((KnownFolder)psObj.BaseObject).FolderId);
+                   psObj = output[1];
+                   Assert.IsNotNull(psObj);
+                   Assert.IsInstanceOfType(psObj.BaseObject, typeof(KnownFolder));
+                   Assert.AreEqual(KnownFolderIds.FOLDERID_Downloads.value, ((KnownFolder)psObj.BaseObject).FolderId);
+               });
+        }
+
         private static void TestCommand(Action<PowerShell> setupCommand, Action<Collection<PSObject>> verify)
         {
             var sessionState = InitialSessionState.Create();
