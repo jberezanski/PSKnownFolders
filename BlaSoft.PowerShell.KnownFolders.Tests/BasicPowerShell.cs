@@ -3,13 +3,23 @@ using System.Linq;
 using System.Management.Automation.Runspaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+#if FX40
+namespace BlaSoft.PowerShell.KnownFolders.Tests.Fx40
+#else
 namespace BlaSoft.PowerShell.KnownFolders.Tests
+#endif
 {
     using System.Management.Automation;
 
     [TestClass]
-    public class BasicPowerShell
+    public class BasicPowerShell : PowerShellTestBase
     {
+        [TestMethod]
+        public void Is_expected_version()
+        {
+            AssertPowerShellIsExpectedVersion();
+        }
+
         [TestMethod]
         public void Can_run_single_command()
         {

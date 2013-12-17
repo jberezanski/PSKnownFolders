@@ -3,12 +3,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{51B0D1F9-6911-409B-A684-9BA2C5B90250}</ProjectGuid>
+    <ProjectGuid>{CB19EC3F-BABE-47EF-9747-9455B50D7179}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BlaSoft.PowerShell.KnownFolders.Tests</RootNamespace>
-    <AssemblyName>BlaSoft.PowerShell.KnownFolders.Tests</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>BlaSoft.PowerShell.KnownFolders.Tests.Fx40</RootNamespace>
+    <AssemblyName>BlaSoft.PowerShell.KnownFolders.Tests.Fx40</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -23,7 +23,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;FX40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -31,15 +31,15 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;FX40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Management.Automation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\WindowsPowerShell\v1.0\System.Management.Automation.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\WindowsPowerShell\3.0\System.Management.Automation.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Choose>
@@ -55,11 +55,21 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="BasicPowerShell.cs" />
-    <Compile Include="GetKnownFolderCommandTests.cs" />
-    <Compile Include="KnownFolderInterop.cs" />
-    <Compile Include="KnownFolderManagerInterop.cs" />
-    <Compile Include="PowerShellTestBase.cs" />
+    <Compile Include="..\BlaSoft.PowerShell.KnownFolders.Tests\BasicPowerShell.cs">
+      <Link>BasicPowerShell.cs</Link>
+    </Compile>
+    <Compile Include="..\BlaSoft.PowerShell.KnownFolders.Tests\GetKnownFolderCommandTests.cs">
+      <Link>GetKnownFolderCommandTests.cs</Link>
+    </Compile>
+    <Compile Include="..\BlaSoft.PowerShell.KnownFolders.Tests\KnownFolderInterop.cs">
+      <Link>KnownFolderInterop.cs</Link>
+    </Compile>
+    <Compile Include="..\BlaSoft.PowerShell.KnownFolders.Tests\KnownFolderManagerInterop.cs">
+      <Link>KnownFolderManagerInterop.cs</Link>
+    </Compile>
+    <Compile Include="..\BlaSoft.PowerShell.KnownFolders.Tests\PowerShellTestBase.cs">
+      <Link>PowerShellTestBase.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -6,16 +6,21 @@ using System.Runtime.InteropServices;
 using BlaSoft.PowerShell.KnownFolders.Win32;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+#if FX40
+namespace BlaSoft.PowerShell.KnownFolders.Tests.Fx40
+#else
 namespace BlaSoft.PowerShell.KnownFolders.Tests
+#endif
 {
     using System.Management.Automation;
 
     [TestClass]
-    public class GetKnownFolderCommandTests
+    public class GetKnownFolderCommandTests : PowerShellTestBase
     {
-        [TestInitialize]
-        public void SetUp()
+        [ClassInitialize]
+        public static void SetUp(TestContext context)
         {
+            AssertPowerShellIsExpectedVersion();
         }
 
         [TestMethod]
