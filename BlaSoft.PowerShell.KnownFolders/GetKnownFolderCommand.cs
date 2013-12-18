@@ -41,7 +41,7 @@ namespace BlaSoft.PowerShell.KnownFolders
                     break;
                 case "BySpecialFolder":
                     Validate(this.SpecialFolder);
-                    result = GetByName(this.SpecialFolder.Select(sf => sf.ToString()));
+                    result = GetByName(this.SpecialFolder.Select(sf => sf == Environment.SpecialFolder.Personal ? "Personal" : sf.ToString()));
                     break;
                 case "ByFolderId":
                     result = GetById(this.FolderId);
