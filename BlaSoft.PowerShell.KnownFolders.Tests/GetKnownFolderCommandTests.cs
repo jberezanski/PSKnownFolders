@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Management.Automation.Runspaces;
@@ -17,6 +18,30 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
     [TestClass]
     public class GetKnownFolderCommandTests : PowerShellTestBase
     {
+        private static readonly HashSet<Guid> UserFolders = new HashSet<Guid>()
+        {
+            KnownFolderIds.FOLDERID_Documents.value,
+            KnownFolderIds.FOLDERID_Contacts.value,
+            KnownFolderIds.FOLDERID_Links.value,
+            KnownFolderIds.FOLDERID_Music.value,
+            KnownFolderIds.FOLDERID_Pictures.value,
+            KnownFolderIds.FOLDERID_Downloads.value,
+            KnownFolderIds.FOLDERID_Desktop.value,
+            KnownFolderIds.FOLDERID_Favorites.value,
+            KnownFolderIds.FOLDERID_Videos.value,
+            KnownFolderIds.FOLDERID_SavedSearches.value,
+            KnownFolderIds.FOLDERID_SavedGames.value,
+        };
+
+        private static readonly HashSet<Guid> PublicFolders = new HashSet<Guid>()
+        {
+            KnownFolderIds.FOLDERID_PublicDocuments.value,
+            KnownFolderIds.FOLDERID_PublicMusic.value,
+            KnownFolderIds.FOLDERID_PublicPictures.value,
+            KnownFolderIds.FOLDERID_PublicDownloads.value,
+            KnownFolderIds.FOLDERID_PublicVideos.value,
+        };
+
         [ClassInitialize]
         public static void SetUp(TestContext context)
         {
@@ -139,26 +164,40 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
                 psh => psh.AddParameter("All"),
                 output =>
                 {
-                    Assert.IsNotNull(output);
-                    Assert.IsTrue(1 < output.Count);
-                    CollectionAssert.AllItemsAreNotNull(output);
-                    CollectionAssert.AllItemsAreUnique(output);
-                    CollectionAssert.AllItemsAreInstancesOfType(output.Select(pso => pso.BaseObject).ToArray(), typeof(KnownFolder));
+                    AssertMultipleFoldersOutputAtLeast(20, output);
                 });
         }
 
         [TestMethod]
-        public void All_is_implicit()
+        public void Can_obtain_all_per_user_folders()
+        {
+            TestGetKnownFolderCommand(
+                psh => psh.AddParameter("PerUser"),
+                output =>
+                {
+                    AssertMultipleFoldersOutput(UserFolders, output);
+                });
+        }
+
+        [TestMethod]
+        public void Can_obtain_all_public_folders()
+        {
+            TestGetKnownFolderCommand(
+                psh => psh.AddParameter("Public"),
+                output =>
+                {
+                    AssertMultipleFoldersOutput(PublicFolders, output);
+                });
+        }
+
+        [TestMethod]
+        public void PerUser_is_implicit()
         {
             TestGetKnownFolderCommand(
                 _ => { },
                 output =>
                 {
-                    Assert.IsNotNull(output);
-                    Assert.IsTrue(1 < output.Count);
-                    CollectionAssert.AllItemsAreNotNull(output);
-                    CollectionAssert.AllItemsAreUnique(output);
-                    CollectionAssert.AllItemsAreInstancesOfType(output.Select(pso => pso.BaseObject).ToArray(), typeof(KnownFolder));
+                    AssertMultipleFoldersOutput(UserFolders, output);
                 });
         }
 
@@ -213,64 +252,60 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
         [TestMethod]
         public void Can_obtain_multiple_user_folders_by_name()
         {
+            var folderIds = new[] { KnownFolderIds.FOLDERID_Desktop.value, KnownFolderIds.FOLDERID_Documents.value };
             TestGetKnownFolderCommand(
                psh => psh.AddParameter("Name", new[] { "Personal", "Desktop" }),
                output =>
                {
-                   Assert.IsNotNull(output);
-                   Assert.AreEqual(2, output.Count);
-                   PSObject psObj;
-                   psObj = output[0];
-                   Assert.IsNotNull(psObj);
-                   Assert.IsInstanceOfType(psObj.BaseObject, typeof(KnownFolder));
-                   Assert.AreEqual(KnownFolderIds.FOLDERID_Documents.value, ((KnownFolder)psObj.BaseObject).FolderId);
-                   psObj = output[1];
-                   Assert.IsNotNull(psObj);
-                   Assert.IsInstanceOfType(psObj.BaseObject, typeof(KnownFolder));
-                   Assert.AreEqual(KnownFolderIds.FOLDERID_Desktop.value, ((KnownFolder)psObj.BaseObject).FolderId);
+                   AssertMultipleFoldersOutput(folderIds, output);
                });
         }
 
         [TestMethod]
         public void Can_obtain_multiple_user_folders_by_SpecialFolder()
         {
+            var folderIds = new[] { KnownFolderIds.FOLDERID_Desktop.value, KnownFolderIds.FOLDERID_Favorites.value };
             TestGetKnownFolderCommand(
                psh => psh.AddParameter("SpecialFolder", new[] { Environment.SpecialFolder.Desktop, Environment.SpecialFolder.Favorites }),
                output =>
                {
-                   Assert.IsNotNull(output);
-                   Assert.AreEqual(2, output.Count);
-                   PSObject psObj;
-                   psObj = output[0];
-                   Assert.IsNotNull(psObj);
-                   Assert.IsInstanceOfType(psObj.BaseObject, typeof(KnownFolder));
-                   Assert.AreEqual(KnownFolderIds.FOLDERID_Desktop.value, ((KnownFolder)psObj.BaseObject).FolderId);
-                   psObj = output[1];
-                   Assert.IsNotNull(psObj);
-                   Assert.IsInstanceOfType(psObj.BaseObject, typeof(KnownFolder));
-                   Assert.AreEqual(KnownFolderIds.FOLDERID_Favorites.value, ((KnownFolder)psObj.BaseObject).FolderId);
+                   AssertMultipleFoldersOutput(folderIds, output);
                });
         }
 
         [TestMethod]
         public void Can_obtain_multiple_user_folders_by_id()
         {
+            var folderIds = new[] { KnownFolderIds.FOLDERID_Documents.value, KnownFolderIds.FOLDERID_Downloads.value };
             TestGetKnownFolderCommand(
-               psh => psh.AddParameter("FolderId", new[] { KnownFolderIds.FOLDERID_Documents.value, KnownFolderIds.FOLDERID_Downloads.value }),
+               psh => psh.AddParameter("FolderId", folderIds),
                output =>
                {
-                   Assert.IsNotNull(output);
-                   Assert.AreEqual(2, output.Count);
-                   PSObject psObj;
-                   psObj = output[0];
-                   Assert.IsNotNull(psObj);
-                   Assert.IsInstanceOfType(psObj.BaseObject, typeof(KnownFolder));
-                   Assert.AreEqual(KnownFolderIds.FOLDERID_Documents.value, ((KnownFolder)psObj.BaseObject).FolderId);
-                   psObj = output[1];
-                   Assert.IsNotNull(psObj);
-                   Assert.IsInstanceOfType(psObj.BaseObject, typeof(KnownFolder));
-                   Assert.AreEqual(KnownFolderIds.FOLDERID_Downloads.value, ((KnownFolder)psObj.BaseObject).FolderId);
+                   AssertMultipleFoldersOutput(folderIds, output);
                });
+        }
+
+        private static void AssertMultipleFoldersOutputAtLeast(int atLeast, Collection<PSObject> output)
+        {
+            Assert.IsNotNull(output);
+            Assert.IsTrue(atLeast <= output.Count);
+            CollectionAssert.AllItemsAreNotNull(output);
+            CollectionAssert.AllItemsAreUnique(output);
+            CollectionAssert.AllItemsAreInstancesOfType(output.Select(pso => pso.BaseObject).ToArray(), typeof(KnownFolder));
+            var outputIds = output.Select(pso => pso.BaseObject).Cast<KnownFolder>().Select(kf => kf.FolderId).ToArray();
+            CollectionAssert.AllItemsAreUnique(outputIds);
+        }
+
+        private static void AssertMultipleFoldersOutput(ICollection<Guid> expected, Collection<PSObject> output)
+        {
+            Assert.IsNotNull(output);
+            //Assert.AreEqual(expected.Count, output.Count);
+            CollectionAssert.AllItemsAreNotNull(output);
+            CollectionAssert.AllItemsAreUnique(output);
+            CollectionAssert.AllItemsAreInstancesOfType(output.Select(pso => pso.BaseObject).ToArray(), typeof(KnownFolder));
+            var outputIds = output.Select(pso => pso.BaseObject).Cast<KnownFolder>().Select(kf => kf.FolderId).ToArray();
+            CollectionAssert.AllItemsAreUnique(outputIds);
+            CollectionAssert.AreEquivalent(expected.ToArray(), outputIds);
         }
 
         private static void AssertSingleFolderOutput(KNOWNFOLDERID expectedId, Collection<PSObject> output)

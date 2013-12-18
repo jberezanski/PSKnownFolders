@@ -8,10 +8,34 @@ using BlaSoft.PowerShell.KnownFolders.Win32;
 
 namespace BlaSoft.PowerShell.KnownFolders
 {
-    [Cmdlet(VerbsCommon.Get, "KnownFolder", DefaultParameterSetName = "All")]
+    [Cmdlet(VerbsCommon.Get, "KnownFolder", DefaultParameterSetName = "PerUser")]
     [OutputType(typeof(KnownFolder))]
     public sealed class GetKnownFolderCommand : PSCmdlet
     {
+        private static readonly HashSet<Guid> UserFolders = new HashSet<Guid>()
+        {
+            KnownFolderIds.FOLDERID_Documents.value,
+            KnownFolderIds.FOLDERID_Contacts.value,
+            KnownFolderIds.FOLDERID_Links.value,
+            KnownFolderIds.FOLDERID_Music.value,
+            KnownFolderIds.FOLDERID_Pictures.value,
+            KnownFolderIds.FOLDERID_Downloads.value,
+            KnownFolderIds.FOLDERID_Desktop.value,
+            KnownFolderIds.FOLDERID_Favorites.value,
+            KnownFolderIds.FOLDERID_Videos.value,
+            KnownFolderIds.FOLDERID_SavedSearches.value,
+            KnownFolderIds.FOLDERID_SavedGames.value,
+        };
+
+        private static readonly HashSet<Guid> PublicFolders = new HashSet<Guid>()
+        {
+            KnownFolderIds.FOLDERID_PublicDocuments.value,
+            KnownFolderIds.FOLDERID_PublicMusic.value,
+            KnownFolderIds.FOLDERID_PublicPictures.value,
+            KnownFolderIds.FOLDERID_PublicDownloads.value,
+            KnownFolderIds.FOLDERID_PublicVideos.value,
+        };
+
         private IKnownFolderManager knownFolderManager;
 
         [Parameter(ParameterSetName = "ByName", Mandatory = true, Position = 0)]
@@ -23,8 +47,16 @@ namespace BlaSoft.PowerShell.KnownFolders
         [Parameter(ParameterSetName = "BySpecialFolder", Mandatory = true, Position = 0)]
         public Environment.SpecialFolder[] SpecialFolder { get; set; }
 
-        [Parameter(ParameterSetName = "All", Position = 0)]
+        [Parameter(ParameterSetName = "All")]
         public SwitchParameter All { get; set; }
+
+        [Alias("Common")]
+        [Parameter(ParameterSetName = "Public")]
+        public SwitchParameter Public { get; set; }
+
+        [Alias("User")]
+        [Parameter(ParameterSetName = "PerUser")]
+        public SwitchParameter PerUser { get; set; }
 
         protected override void BeginProcessing()
         {
@@ -37,14 +69,20 @@ namespace BlaSoft.PowerShell.KnownFolders
             switch (this.ParameterSetName)
             {
                 case "ByName":
-                    result = GetByName(this.Name);
+                    result = GetByNames(this.Name);
                     break;
                 case "BySpecialFolder":
                     Validate(this.SpecialFolder);
-                    result = GetByName(this.SpecialFolder.Select(sf => sf == Environment.SpecialFolder.Personal ? "Personal" : sf.ToString()));
+                    result = GetByNames(this.SpecialFolder.Select(sf => sf == Environment.SpecialFolder.Personal ? "Personal" : sf.ToString()));
                     break;
                 case "ByFolderId":
-                    result = GetById(this.FolderId);
+                    result = GetByIds(this.FolderId);
+                    break;
+                case "PerUser":
+                    result = GetByIds(UserFolders);
+                    break;
+                case "Public":
+                    result = GetByIds(PublicFolders);
                     break;
                 case "All":
                     result = GetAll();
@@ -111,12 +149,12 @@ namespace BlaSoft.PowerShell.KnownFolders
             return result;
         }
 
-        private IEnumerable<IKnownFolder> GetByName(IEnumerable<string> names)
+        private IEnumerable<IKnownFolder> GetByNames(IEnumerable<string> names)
         {
             return names.Select(name => this.GetKnownFolderByName(name));
         }
 
-        private IEnumerable<IKnownFolder> GetById(IEnumerable<Guid> folderIds)
+        private IEnumerable<IKnownFolder> GetByIds(IEnumerable<Guid> folderIds)
         {
             return folderIds.Select(folderId => this.GetKnownFolderById(new KNOWNFOLDERID(folderId.ToString())));
         }
