@@ -93,7 +93,7 @@ namespace BlaSoft.PowerShell.KnownFolders
 
             foreach (var kf in result)
             {
-                this.WriteObject(new KnownFolder(kf, "unknown"));
+                this.WriteObject(new KnownFolder(kf));
             }
         }
 

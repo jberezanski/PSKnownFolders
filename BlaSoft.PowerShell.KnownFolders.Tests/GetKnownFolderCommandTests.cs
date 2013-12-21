@@ -89,7 +89,7 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
                 var nameVal = nameProp.Value;
                 Assert.IsNotNull(nameVal);
                 Assert.IsInstanceOfType(nameVal, typeof(string));
-                Assert.AreEqual("unknown", nameVal);
+                Assert.AreEqual("Personal", nameVal);
             });
         }
 

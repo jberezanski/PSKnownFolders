@@ -7,25 +7,27 @@ namespace BlaSoft.PowerShell.KnownFolders
 {
     public sealed class KnownFolder
     {
-        private IKnownFolder nativeKnownFolder;
+        private readonly IKnownFolder nativeKnownFolder;
 
-        internal KnownFolder(IKnownFolder nativeKnownFolder, string name)
+        private KnownFolderDefinition definition;
+
+        internal KnownFolder(IKnownFolder nativeKnownFolder)
         {
             if (nativeKnownFolder == null)
             {
                 throw new ArgumentNullException("nativeKnownFolder");
             }
 
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("name is null or empty", "name");
-            }
-
             this.nativeKnownFolder = nativeKnownFolder;
-            this.Name = name;
         }
 
-        public string Name { get; private set; }
+        public string Name
+        {
+            get
+            {
+                return this.Definition.Name;
+            }
+        }
 
         public string Path
         {
@@ -99,6 +101,19 @@ namespace BlaSoft.PowerShell.KnownFolders
                 }
 
                 return typeid.value;
+            }
+        }
+
+        public KnownFolderDefinition Definition
+        {
+            get
+            {
+                if (this.definition == null)
+                {
+                    this.definition = new KnownFolderDefinition(this.nativeKnownFolder);
+                }
+
+                return this.definition;
             }
         }
     }
