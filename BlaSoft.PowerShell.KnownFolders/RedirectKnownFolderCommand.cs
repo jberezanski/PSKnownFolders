@@ -38,6 +38,9 @@ namespace BlaSoft.PowerShell.KnownFolders
         [Parameter]
         public SwitchParameter PassThru { get; set; }
 
+        [Parameter]
+        public SwitchParameter DontMoveExistingData { get; set; }
+
         protected override void BeginProcessing()
         {
             this.knownFolderManager = (IKnownFolderManager)new KnownFolderManager();
@@ -100,7 +103,8 @@ namespace BlaSoft.PowerShell.KnownFolders
             {
                 flags |= KF_REDIRECT_FLAGS.KF_REDIRECT_CHECK_ONLY;
             }
-            else
+
+            if (!this.DontMoveExistingData)
             {
                 flags |= KF_REDIRECT_FLAGS.KF_REDIRECT_COPY_CONTENTS | KF_REDIRECT_FLAGS.KF_REDIRECT_DEL_SOURCE_CONTENTS;
             }
