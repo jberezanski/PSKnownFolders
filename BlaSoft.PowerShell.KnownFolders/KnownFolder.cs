@@ -66,13 +66,13 @@ namespace BlaSoft.PowerShell.KnownFolders
             }
         }
 
-        public string Category
+        public KnownFolderCategory Category
         {
             get
             {
                 KF_CATEGORY cat;
                 this.nativeKnownFolder.GetCategory(out cat);
-                return cat.ToString();
+                return (KnownFolderCategory)cat;
             }
         }
 

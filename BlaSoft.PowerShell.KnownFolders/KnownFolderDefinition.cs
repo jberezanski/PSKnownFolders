@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using BlaSoft.PowerShell.KnownFolders.Win32;
 
 namespace BlaSoft.PowerShell.KnownFolders
@@ -97,28 +98,33 @@ namespace BlaSoft.PowerShell.KnownFolders
             }
         }
 
-        public string Category
+        public KnownFolderCategory Category
         {
             get
             {
-                return this.nativeDefinition.category.ToString();
+                return (KnownFolderCategory)this.nativeDefinition.category;
             }
         }
 
-        public string Flags
+        public KnownFolderDefinitionFlags Flags
         {
             get
             {
-                return this.nativeDefinition.kfdFlags.ToString();
+                return (KnownFolderDefinitionFlags)this.nativeDefinition.kfdFlags;
             }
         }
 
-        public uint Attributes
+        public FileAttributes Attributes
         {
             get
             {
-                return this.nativeDefinition.dwAttributes;
+                return (FileAttributes)this.nativeDefinition.dwAttributes;
             }
+        }
+
+        public override string ToString()
+        {
+            return "(" + this.GetType().Name + ")";
         }
     }
 }
