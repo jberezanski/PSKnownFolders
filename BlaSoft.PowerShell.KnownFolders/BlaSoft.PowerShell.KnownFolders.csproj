@@ -68,6 +68,9 @@
     <Compile Include="Win32\SIGDN.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="en-US\BlaSoft.PowerShell.KnownFolders.dll-help.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="KnownFolders.psd1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
