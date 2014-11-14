@@ -54,7 +54,7 @@ namespace BlaSoft.PowerShell.KnownFolders
                     this.RedirectOneFolder(this.SingleFolder, this.NewPath);
                     break;
                 case "MultipleFolders":
-                    var newPath = DetermineNewPath(this.Folder, this.Destination);
+                    var newPath = this.DetermineNewPath(this.Folder, this.Destination);
                     this.RedirectOneFolder(this.Folder, newPath);
                     break;
                 default:
@@ -92,13 +92,13 @@ namespace BlaSoft.PowerShell.KnownFolders
                 return;
             }
 
-            if (!this.Force && !this.ShouldContinue("Do it?", "Folder redirection", ref yesToAll, ref noToAll))
+            if (!this.Force && !this.ShouldContinue("Do it?", "Folder redirection", ref this.yesToAll, ref this.noToAll))
             {
                 return;
             }
 
             var id = new KNOWNFOLDERID(folder.FolderId);
-            KF_REDIRECT_FLAGS flags = KF_REDIRECT_FLAGS.KF_REDIRECT_NONE;
+            var flags = KF_REDIRECT_FLAGS.KF_REDIRECT_NONE;
             if (this.CheckOnly)
             {
                 flags |= KF_REDIRECT_FLAGS.KF_REDIRECT_CHECK_ONLY;
@@ -110,15 +110,7 @@ namespace BlaSoft.PowerShell.KnownFolders
             }
 
             string error;
-            HResult hr;
-            hr = this.knownFolderManager.Redirect(
-                ref id,
-                IntPtr.Zero,
-                flags,
-                newPath,
-                0,
-                null,
-                out error);
+            HResult hr = this.knownFolderManager.Redirect(ref id, IntPtr.Zero, flags, newPath, 0, null, out error);
             if (hr != HResult.S_OK)
             {
                 if (string.IsNullOrEmpty(error))

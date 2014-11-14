@@ -1,7 +1,5 @@
-﻿using System;
+﻿using BlaSoft.PowerShell.KnownFolders.Win32;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using BlaSoft.PowerShell.KnownFolders.Win32;
-using System.Runtime.CompilerServices;
 
 #if FX40
 namespace BlaSoft.PowerShell.KnownFolders.Tests.Fx40
@@ -19,7 +17,7 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
         {
             var knownFolderManager = (IKnownFolderManager)new KnownFolderManager();
             var id = KnownFolderIds.FOLDERID_Documents;
-            knownFolderManager.GetFolder(ref id, out documentsFolder);
+            knownFolderManager.GetFolder(ref id, out this.documentsFolder);
         }
 
         [TestMethod]

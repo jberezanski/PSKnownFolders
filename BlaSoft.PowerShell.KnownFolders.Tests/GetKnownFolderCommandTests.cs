@@ -299,7 +299,7 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
         private static void AssertMultipleFoldersOutput(ICollection<Guid> expected, Collection<PSObject> output)
         {
             Assert.IsNotNull(output);
-            //Assert.AreEqual(expected.Count, output.Count);
+            ////Assert.AreEqual(expected.Count, output.Count);
             CollectionAssert.AllItemsAreNotNull(output);
             CollectionAssert.AllItemsAreUnique(output);
             CollectionAssert.AllItemsAreInstancesOfType(output.Select(pso => pso.BaseObject).ToArray(), typeof(KnownFolder));

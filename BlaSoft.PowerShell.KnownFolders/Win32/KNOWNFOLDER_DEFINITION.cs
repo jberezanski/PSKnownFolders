@@ -42,6 +42,24 @@ namespace BlaSoft.PowerShell.KnownFolders.Win32
 
         public Guid ftidType;
 
+        private KNOWNFOLDER_DEFINITION(ref KNOWNFOLDER_DEFINITION_RAW d, KnownFolderDefinitionHandles h)
+        {
+            this.category = d.category;
+            this.fidParent = d.fidParent;
+            this.dwAttributes = d.dwAttributes;
+            this.kfdFlags = d.kfdFlags;
+            this.ftidType = d.ftidType;
+
+            this.name = UnmarshalString(h.hName, "hName");
+            this.description = UnmarshalString(h.hDescription, "hDescription");
+            this.relativePath = UnmarshalString(h.hRelativePath, "hRelativePath");
+            this.parsingName = UnmarshalString(h.hParsingName, "hParsingName");
+            this.toolTip = UnmarshalString(h.hToolTip, "hToolTip");
+            this.localizedName = UnmarshalString(h.hLocalizedName, "hLocalizedName");
+            this.icon = UnmarshalString(h.hIcon, "hIcon");
+            this.security = UnmarshalString(h.hSecurity, "hSecurity");
+        }
+
         public static KNOWNFOLDER_DEFINITION FromKnownFolder(IKnownFolder knownFolder)
         {
             if (knownFolder == null)
@@ -77,24 +95,6 @@ namespace BlaSoft.PowerShell.KnownFolders.Win32
             }
 
             return def;
-        }
-
-        private KNOWNFOLDER_DEFINITION(ref KNOWNFOLDER_DEFINITION_RAW d, KnownFolderDefinitionHandles h)
-        {
-            this.category = d.category;
-            this.fidParent = d.fidParent;
-            this.dwAttributes = d.dwAttributes;
-            this.kfdFlags = d.kfdFlags;
-            this.ftidType = d.ftidType;
-
-            this.name = UnmarshalString(h.hName, "hName");
-            this.description = UnmarshalString(h.hDescription, "hDescription");
-            this.relativePath = UnmarshalString(h.hRelativePath, "hRelativePath");
-            this.parsingName = UnmarshalString(h.hParsingName, "hParsingName");
-            this.toolTip = UnmarshalString(h.hToolTip, "hToolTip");
-            this.localizedName = UnmarshalString(h.hLocalizedName, "hLocalizedName");
-            this.icon = UnmarshalString(h.hIcon, "hIcon");
-            this.security = UnmarshalString(h.hSecurity, "hSecurity");
         }
 
         private static string UnmarshalString(SafeCoTaskMemHandle hValue, string handleName)
@@ -160,13 +160,6 @@ namespace BlaSoft.PowerShell.KnownFolders.Win32
                 SecureHandle(this.hSecurity, ref d.pszSecurity);
             }
 
-            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-            private static void SecureHandle(SafeCoTaskMemHandle handle, ref IntPtr ptr)
-            {
-                handle.SetHandle(ptr);
-                ptr = IntPtr.Zero;
-            }
-
             public void Dispose()
             {
                 this.hName.Dispose();
@@ -178,6 +171,13 @@ namespace BlaSoft.PowerShell.KnownFolders.Win32
                 this.hIcon.Dispose();
                 this.hSecurity.Dispose();
                 GC.SuppressFinalize(this);
+            }
+
+            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+            private static void SecureHandle(SafeCoTaskMemHandle handle, ref IntPtr ptr)
+            {
+                handle.SetHandle(ptr);
+                ptr = IntPtr.Zero;
             }
         }
     }

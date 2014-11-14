@@ -21,5 +21,5 @@ namespace BlaSoft.PowerShell.KnownFolders.Win32
         void GetAttributes(uint sfgaoMask, out uint psfgaoAttribs);
 
         void Compare(IShellItem psi, SICHINTF hint, out int piOrder);
-    };
+    }
 }

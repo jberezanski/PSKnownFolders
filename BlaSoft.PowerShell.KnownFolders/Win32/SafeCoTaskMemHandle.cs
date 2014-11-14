@@ -12,18 +12,18 @@ namespace BlaSoft.PowerShell.KnownFolders.Win32
         {
         }
 
+        public override bool IsInvalid
+        {
+            get
+            {
+                return this.handle == IntPtr.Zero;
+            }
+        }
+
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public new void SetHandle(IntPtr handle)
         {
             base.SetHandle(handle);
-        }
-
-        public override bool IsInvalid
-        {
-            get 
-            { 
-                return this.handle == IntPtr.Zero; 
-            }
         }
 
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]

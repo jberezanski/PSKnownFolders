@@ -12,7 +12,7 @@ namespace BlaSoft.PowerShell.KnownFolders
     [OutputType(typeof(KnownFolder))]
     public sealed class GetKnownFolderCommand : PSCmdlet
     {
-        private static readonly HashSet<Guid> UserFolders = new HashSet<Guid>()
+        private static readonly HashSet<Guid> UserFolders = new HashSet<Guid>
         {
             KnownFolderIds.FOLDERID_Documents.value,
             KnownFolderIds.FOLDERID_Contacts.value,
@@ -27,7 +27,7 @@ namespace BlaSoft.PowerShell.KnownFolders
             KnownFolderIds.FOLDERID_SavedGames.value,
         };
 
-        private static readonly HashSet<Guid> PublicFolders = new HashSet<Guid>()
+        private static readonly HashSet<Guid> PublicFolders = new HashSet<Guid>
         {
             KnownFolderIds.FOLDERID_PublicDocuments.value,
             KnownFolderIds.FOLDERID_PublicMusic.value,
@@ -69,23 +69,23 @@ namespace BlaSoft.PowerShell.KnownFolders
             switch (this.ParameterSetName)
             {
                 case "ByName":
-                    result = GetByNames(this.Name);
+                    result = this.GetByNames(this.Name);
                     break;
                 case "BySpecialFolder":
                     Validate(this.SpecialFolder);
-                    result = GetByNames(this.SpecialFolder.Select(sf => sf == Environment.SpecialFolder.Personal ? "Personal" : sf.ToString()));
+                    result = this.GetByNames(this.SpecialFolder.Select(sf => sf == Environment.SpecialFolder.Personal ? "Personal" : sf.ToString()));
                     break;
                 case "ByFolderId":
-                    result = GetByIds(this.FolderId);
+                    result = this.GetByIds(this.FolderId);
                     break;
                 case "PerUser":
-                    result = GetByIds(UserFolders);
+                    result = this.GetByIds(UserFolders);
                     break;
                 case "Public":
-                    result = GetByIds(PublicFolders);
+                    result = this.GetByIds(PublicFolders);
                     break;
                 case "All":
-                    result = GetAll();
+                    result = this.GetAll();
                     break;
                 default:
                     throw new ArgumentException("Unsupported parameter set name: " + this.ParameterSetName);
