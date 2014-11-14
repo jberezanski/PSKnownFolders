@@ -127,8 +127,8 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
                 var categoryProp = psObj.Properties["Category"];
                 var categoryVal = categoryProp.Value;
                 Assert.IsNotNull(categoryVal);
-                Assert.IsInstanceOfType(categoryVal, typeof(string));
-                Assert.AreEqual(KF_CATEGORY.KF_CATEGORY_PERUSER.ToString(), categoryVal);
+                Assert.IsInstanceOfType(categoryVal, typeof(KnownFolderCategory));
+                Assert.AreEqual(KnownFolderCategory.PerUser, categoryVal);
             });
         }
 
