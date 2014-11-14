@@ -1,5 +1,8 @@
-﻿namespace BlaSoft.PowerShell.KnownFolders.Win32
+﻿using System;
+
+namespace BlaSoft.PowerShell.KnownFolders.Win32
 {
+    [Flags]
     internal enum KF_REDIRECT_FLAGS
     {
         KF_REDIRECT_NONE = 0,
