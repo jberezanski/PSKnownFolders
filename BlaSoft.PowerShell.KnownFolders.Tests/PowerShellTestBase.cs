@@ -38,7 +38,7 @@ namespace BlaSoft.PowerShell.KnownFolders.Tests
                 Assert.AreNotEqual(2, psVersion.Major, "Unexpected PowerShell version.");
                 Assert.AreNotEqual(1, psVersion.Major, "Unexpected PowerShell version.");
 #else
-                Assert.AreEqual(2, clrVersion.Major, "This test project requires CLR 2.0. Visual Studio will use CLR 4 if running tests from .NET 3.5 and 4.0 projects together. To work around this, run tests from this project separately from other test projects.");
+                Assert.AreEqual(2, clrVersion.Major, "This test project requires CLR 2.0. Older Visual Studio will use CLR 4 if running tests from .NET 3.5 and 4.0 projects together; to work around this, run tests from this project separately from other test projects. Modern Visual Studio does not support running tests under .NET 3.5 at all (https://github.com/Microsoft/vstest/issues/1896), sorry.");
                 Assert.AreEqual(2, psVersion.Major, "Unexpected PowerShell version.");
 #endif
             }
