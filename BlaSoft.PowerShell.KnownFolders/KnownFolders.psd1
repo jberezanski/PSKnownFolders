@@ -68,16 +68,19 @@ FormatsToProcess = @('KnownFolders.format.ps1xml')
 # NestedModules = @()
 
 # Functions to export from this module
-FunctionsToExport = '*'
+FunctionsToExport = @()
 
 # Cmdlets to export from this module
-CmdletsToExport = '*'
+CmdletsToExport = @(
+    'Get-KnownFolder'
+    'Move-KnownFolder'
+)
 
 # Variables to export from this module
-VariablesToExport = '*'
+VariablesToExport = @()
 
 # Aliases to export from this module
-AliasesToExport = '*'
+AliasesToExport = @()
 
 # List of all modules packaged with this module
 # ModuleList = @()
