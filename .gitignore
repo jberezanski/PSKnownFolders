@@ -3,9 +3,10 @@
 
 *.suo
 *.user
+.vs/
 
 /TestResults
 *.Cache
 
 [Pp]ackages/
-.vs/
+[Oo]utput/
