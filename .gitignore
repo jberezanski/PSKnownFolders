@@ -6,3 +6,6 @@
 
 /TestResults
 *.Cache
+
+[Pp]ackages/
+.vs/
