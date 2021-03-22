@@ -54,19 +54,19 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="..\BlaSoft.PowerShell.KnownFolders.Tests\BasicPowerShell.cs">
+    <Compile Include="..\BlaSoft.PowerShell.KnownFolders.Tests.Fx35\BasicPowerShell.cs">
       <Link>BasicPowerShell.cs</Link>
     </Compile>
-    <Compile Include="..\BlaSoft.PowerShell.KnownFolders.Tests\GetKnownFolderCommandTests.cs">
+    <Compile Include="..\BlaSoft.PowerShell.KnownFolders.Tests.Fx35\GetKnownFolderCommandTests.cs">
       <Link>GetKnownFolderCommandTests.cs</Link>
     </Compile>
-    <Compile Include="..\BlaSoft.PowerShell.KnownFolders.Tests\KnownFolderInterop.cs">
+    <Compile Include="..\BlaSoft.PowerShell.KnownFolders.Tests.Fx35\KnownFolderInterop.cs">
       <Link>KnownFolderInterop.cs</Link>
     </Compile>
-    <Compile Include="..\BlaSoft.PowerShell.KnownFolders.Tests\KnownFolderManagerInterop.cs">
+    <Compile Include="..\BlaSoft.PowerShell.KnownFolders.Tests.Fx35\KnownFolderManagerInterop.cs">
       <Link>KnownFolderManagerInterop.cs</Link>
     </Compile>
-    <Compile Include="..\BlaSoft.PowerShell.KnownFolders.Tests\PowerShellTestBase.cs">
+    <Compile Include="..\BlaSoft.PowerShell.KnownFolders.Tests.Fx35\PowerShellTestBase.cs">
       <Link>PowerShellTestBase.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

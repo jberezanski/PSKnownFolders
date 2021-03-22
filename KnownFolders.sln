@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows Desktop
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlaSoft.PowerShell.KnownFolders", "BlaSoft.PowerShell.KnownFolders\BlaSoft.PowerShell.KnownFolders.csproj", "{DE997F06-7000-4E8B-83D8-B4B4E1BBB048}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlaSoft.PowerShell.KnownFolders.Tests", "BlaSoft.PowerShell.KnownFolders.Tests\BlaSoft.PowerShell.KnownFolders.Tests.csproj", "{51B0D1F9-6911-409B-A684-9BA2C5B90250}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlaSoft.PowerShell.KnownFolders.Tests.Fx35", "BlaSoft.PowerShell.KnownFolders.Tests.Fx35\BlaSoft.PowerShell.KnownFolders.Tests.Fx35.csproj", "{51B0D1F9-6911-409B-A684-9BA2C5B90250}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlaSoft.PowerShell.KnownFolders.Tests.Fx40", "BlaSoft.PowerShell.KnownFolders.Tests.Fx40\BlaSoft.PowerShell.KnownFolders.Tests.Fx40.csproj", "{CB19EC3F-BABE-47EF-9747-9455B50D7179}"
 EndProject

@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 #if FX40
 namespace BlaSoft.PowerShell.KnownFolders.Tests.Fx40
 #else
-namespace BlaSoft.PowerShell.KnownFolders.Tests
+namespace BlaSoft.PowerShell.KnownFolders.Tests.Fx35
 #endif
 {
     [TestClass]
