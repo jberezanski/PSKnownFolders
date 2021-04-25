@@ -13,7 +13,7 @@
 ModuleToProcess = 'BlaSoft.PowerShell.KnownFolders.dll'
 
 # Version number of this module.
-ModuleVersion = '1.0.0'
+ModuleVersion = '1.1.0'
 
 # ID used to uniquely identify this module
 GUID = '0147f508-4b23-40d4-9769-03440807891f'

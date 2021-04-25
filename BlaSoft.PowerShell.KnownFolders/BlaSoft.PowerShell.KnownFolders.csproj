@@ -43,6 +43,7 @@
     <Compile Include="KnownFolderCategory.cs" />
     <Compile Include="KnownFolderDefinition.cs" />
     <Compile Include="KnownFolderDefinitionFlags.cs" />
+    <Compile Include="KnownFolderProvider.cs" />
     <Compile Include="KnownFolderRedirectionCapabilitiesExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RedirectKnownFolderCommand.cs" />

@@ -36,7 +36,7 @@ namespace BlaSoft.PowerShell.KnownFolders
             KnownFolderIds.FOLDERID_PublicVideos.value,
         };
 
-        private IKnownFolderManager knownFolderManager;
+        private readonly IKnownFolderManager knownFolderManager = (IKnownFolderManager)new KnownFolderManager();
 
         [Parameter(ParameterSetName = "ByName", Mandatory = true, Position = 0)]
         public string[] Name { get; set; }
@@ -57,11 +57,6 @@ namespace BlaSoft.PowerShell.KnownFolders
         [Alias("User")]
         [Parameter(ParameterSetName = "PerUser")]
         public SwitchParameter PerUser { get; set; }
-
-        protected override void BeginProcessing()
-        {
-            this.knownFolderManager = (IKnownFolderManager)new KnownFolderManager();
-        }
 
         protected override void ProcessRecord()
         {
@@ -108,7 +103,7 @@ namespace BlaSoft.PowerShell.KnownFolders
             }
         }
 
-        private IEnumerable<IKnownFolder> GetAll()
+        internal IEnumerable<IKnownFolder> GetAll()
         {
             KNOWNFOLDERID[] ids;
 
@@ -174,7 +169,7 @@ namespace BlaSoft.PowerShell.KnownFolders
             return nativeKnownFolder;
         }
 
-        private IKnownFolder GetKnownFolderByName(string name)
+        internal IKnownFolder GetKnownFolderByName(string name)
         {
             IKnownFolder nativeKnownFolder;
             try
